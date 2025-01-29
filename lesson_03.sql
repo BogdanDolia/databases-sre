@@ -1,6 +1,4 @@
 /*
-noinspection SqlNoDataSourceInspectionForFile
-
 Learn to use aggregate functions (COUNT, SUM, AVG, MIN, MAX) in queries.
 Understand the application of GROUP BY and HAVING operators.
 
