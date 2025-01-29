@@ -1,18 +1,20 @@
--- noinspection SqlNoDataSourceInspectionForFile
--- 
--- Научиться использовать агрегатные функции (COUNT, SUM, AVG, MIN, MAX) в запросах.
--- Разобрать применение операторов GROUP BY и HAVING.
---
--- Агрегатные функции
---  COUNT() – подсчитывает количество строк.
---  SUM() – сумма значений столбца.
---  AVG() – среднее значение.
---  MIN() / MAX() – минимальное и максимальное значение столбца.
---
--- Фильтрация групп – HAVING
---  Если WHERE фильтрует отдельные строки, то HAVING фильтрует уже «сгруппированные» данные.
---
--- Создание таблицы employees
+/*
+noinspection SqlNoDataSourceInspectionForFile
+
+Learn to use aggregate functions (COUNT, SUM, AVG, MIN, MAX) in queries.
+Understand the application of GROUP BY and HAVING operators.
+
+Aggregate Functions
+COUNT() – counts the number of rows.
+SUM() – sums the values of a column.
+AVG() – calculates the average value.
+MIN() / MAX() – finds the minimum and maximum values of a column.
+
+Filtering groups – HAVING
+WHERE filters individual rows, whereas HAVING filters already “grouped” data.
+
+Creating the employees table
+ */
 CREATE TABLE
     employees (
         employee_id SERIAL PRIMARY KEY,
@@ -23,7 +25,7 @@ CREATE TABLE
         status VARCHAR(20)
     );
 
--- Заполнение таблицы тестовыми данными
+-- Populating the table with test data
 INSERT INTO
     employees (first_name, last_name, department, salary, status)
 VALUES
