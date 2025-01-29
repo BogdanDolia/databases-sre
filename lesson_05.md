@@ -226,7 +226,6 @@ CREATE TABLE Authors (
     bio TEXT
 );
 
-```sql
 -- Таблица Authors (Авторы)
 CREATE TABLE Authors (
     author_id SERIAL PRIMARY KEY,
