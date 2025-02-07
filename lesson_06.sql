@@ -51,12 +51,9 @@ CREATE INDEX idx_books_categories ON Book_Categories USING GIN (category_id);
 -- The EXPLAIN command allows you to see how PostgreSQL plans to execute your query. 
 -- This is useful for identifying bottlenecks and understanding how to optimize queries.
 EXPLAIN
-SELECT
-    *
-FROM
-    Books
-WHERE
-    title = 'Inception';
+SELECT *
+FROM Books
+WHERE title = 'Inception';
 
 -- Result:
 -- Seq Scan on Books  (cost=0.00..12.50 rows=1 width=...)
@@ -71,29 +68,23 @@ WHERE
 CREATE INDEX idx_books_title ON Books (title);
 
 EXPLAIN
-SELECT
-    *
-FROM
-    Books
-WHERE
-    title = 'Inception';
+SELECT *
+FROM Books
+WHERE title = 'Inception';
 
 -- Index Scan using idx_books_title on Books  (cost=0.29..8.31 rows=1 width=...)
 --   Index Cond: (title = 'Inception'::varchar)
 -- Example of a complex query:
-SELECT
-    o.order_id,
-    u.username,
-    b.title,
-    oi.quantity
-FROM
-    Orders o
-    JOIN Users u ON o.user_id = u.user_id
-    JOIN Order_Items oi ON o.order_id = oi.order_id
-    JOIN Books b ON oi.book_id = b.book_id
-WHERE
-    u.username = 'john_doe'
-    AND b.title LIKE 'Harry Potter%';
+SELECT o.order_id,
+       u.username,
+       b.title,
+       oi.quantity
+FROM Orders o
+         JOIN Users u ON o.user_id = u.user_id
+         JOIN Order_Items oi ON o.order_id = oi.order_id
+         JOIN Books b ON oi.book_id = b.book_id
+WHERE u.username = 'john_doe'
+  AND b.title LIKE 'Harry Potter%';
 
 -- How to create an index for this query:
 CREATE INDEX idx_users_username ON Users (username);
@@ -113,81 +104,57 @@ CREATE INDEX idx_order_items_book_id ON Order_Items (book_id);
 --
 -- 	1.	Avoid SELECT *:
 -- 	•	Request only the necessary columns to reduce the amount of transferred data.
-SELECT
-    title,
-    price
-FROM
-    Books
-WHERE
-    title LIKE 'Harry Potter%';
+SELECT title,
+       price
+FROM Books
+WHERE title LIKE 'Harry Potter%';
 
 -- 2.	Use covering indexes:
 -- •	Indexes that include all columns used in a query allow queries to be executed entirely from the index.
 CREATE INDEX idx_books_title_price ON Books (title, price);
 
-SELECT
-    title,
-    price
-FROM
-    Books
-WHERE
-    title LIKE 'Harry Potter%';
+SELECT title,
+       price
+FROM Books
+WHERE title LIKE 'Harry Potter%';
 
 -- 3.	Avoid functions on indexed columns:
 -- •	Using functions on indexed columns can prevent index usage.
 -- Bad:
-WHERE
-    LOWER(title) = 'inception'
-    -- Good:
-WHERE
-    title = 'Inception'
-    -- 4.	Use LIMIT for large result sets:
-    -- •	If you need only part of the results, use LIMIT to reduce the amount of processed data.
-SELECT
-    title
-FROM
-    Books
-ORDER BY
-    publication_date DESC
-LIMIT
-    10;
+-- WHERE
+--     LOWER(title) = 'inception'
+-- Good:
+-- WHERE
+--     title = 'Inception'
+-- 4.	Use LIMIT for large result sets:
+-- •	If you need only part of the results, use LIMIT to reduce the amount of processed data.
+SELECT title
+FROM Books
+ORDER BY publication_date DESC
+LIMIT 10;
 
 -- Homework:
 EXPLAIN
-SELECT
-    name,
-    year
-FROM
-    movies
-WHERE
-    year > (
-        SELECT
-            AVG(year)
-        FROM
-            movies
-    );
+SELECT name,
+       year
+FROM movies
+WHERE year > (SELECT AVG(year)
+              FROM movies);
 
 CREATE INDEX idx_movies_name_year ON movies (name, year);
 
 CREATE INDEX idx_movies_year ON movies (year);
 
 EXPLAIN ANALYZE
-SELECT
-    name,
-    year
-FROM
-    movies
-WHERE
-    year > (
-        SELECT
-            AVG(year)
-        FROM
-            movies
-    );
+SELECT name,
+       year
+FROM movies
+WHERE year > (SELECT AVG(year)
+              FROM movies);
 
 --
 --
-Final Recommendations
+-- Final Recommendations
 -- •	Create indexes on columns frequently used in WHERE, JOIN, ORDER BY, and GROUP BY clauses.
 -- •	Use EXPLAIN ANALYZE to obtain actual execution data.
 -- •	Update table statistics using ANALYZE so the query optimizer has up-to-date information.

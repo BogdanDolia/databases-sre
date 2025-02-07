@@ -33,17 +33,18 @@ required beyond just returning a result.
  */
 -- FUNCTION
 CREATE
-OR REPLACE FUNCTION hello_world () RETURNS text AS $$ 
+    OR REPLACE FUNCTION hello_world() RETURNS text AS
+$$
 BEGIN
     RETURN 'Hello, world!';
 END;
 $$ LANGUAGE plpgsql;
 
-SELECT
-    hello_world ();
+SELECT hello_world();
 
 CREATE
-OR REPLACE FUNCTION calculate_discount (price numeric, discount_percent numeric) RETURNS numeric AS $$
+    OR REPLACE FUNCTION calculate_discount(price numeric, discount_percent numeric) RETURNS numeric AS
+$$
 DECLARE
     discounted_price numeric;
 BEGIN
@@ -52,12 +53,19 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-SELECT
-    calculate_discount (100, 15);
+SELECT calculate_discount(100, 15);
 
 -- Result: 85
 CREATE
-OR REPLACE FUNCTION get_expensive_books (min_price numeric) RETURNS TABLE (book_id int, title text, price numeric) AS $$
+    OR REPLACE FUNCTION get_expensive_books(min_price numeric)
+    RETURNS TABLE
+            (
+                book_id int,
+                title   text,
+                price   numeric
+            )
+AS
+$$
 BEGIN
     RETURN QUERY
         SELECT b.book_id, b.title, b.price
@@ -66,24 +74,25 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-SELECT
-    *
+SELECT *
 FROM
-    get_expensive_books (50);
+    get_expensive_books(50);
 
 -- PROCEDURE
 CREATE
-OR REPLACE PROCEDURE apply_discount_to_books (discount_percent numeric) LANGUAGE plpgsql AS $$
+    OR REPLACE PROCEDURE apply_discount_to_books(discount_percent numeric)
+    LANGUAGE plpgsql AS
+$$
 BEGIN
     -- Example: updating the price for all books.
     UPDATE books
     SET price = price - (price * discount_percent / 100);
-    
+
     RAISE NOTICE 'Discount of %%% applied to all books', discount_percent;
 END;
 $$;
 
-CALL apply_discount_to_books (10);
+CALL apply_discount_to_books(10);
 
 /*
 4. Triggers
@@ -99,30 +108,34 @@ Example: Audit trigger
 Suppose we have a table `books`, and we want to keep a log of price changes in the `books_price_log` table.
  */
 CREATE TABLE
-    books_price_log (
-        log_id SERIAL PRIMARY KEY,
-        book_id INT NOT NULL,
-        old_price DECIMAL(10, 2),
-        new_price DECIMAL(10, 2),
-        changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
+    books_price_log
+(
+    log_id     SERIAL PRIMARY KEY,
+    book_id    INT NOT NULL,
+    old_price  DECIMAL(10, 2),
+    new_price  DECIMAL(10, 2),
+    changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
 CREATE
-OR REPLACE FUNCTION log_price_change () RETURNS TRIGGER AS $$
+    OR REPLACE FUNCTION log_price_change() RETURNS TRIGGER AS
+$$
 BEGIN
     -- Функция будет вызываться перед обновлением данных
     IF NEW.price <> OLD.price THEN
         INSERT INTO books_price_log(book_id, old_price, new_price)
         VALUES (OLD.book_id, OLD.price, NEW.price);
     END IF;
-    RETURN NEW;  -- важно вернуть NEW, чтобы продолжить операцию UPDATE
+    RETURN NEW; -- важно вернуть NEW, чтобы продолжить операцию UPDATE
 END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER books_price_log_trigger
-AFTER
-UPDATE OF price ON books FOR EACH ROW
-EXECUTE PROCEDURE log_price_change ();
+    AFTER
+        UPDATE OF price
+    ON books
+    FOR EACH ROW
+EXECUTE PROCEDURE log_price_change();
 
 /*
 • AFTER UPDATE OF price — the trigger fires after the `price` column is updated.
@@ -148,51 +161,56 @@ For example, setting `updated_at = NOW()` or adjusting input data.
 1. Create a function that returns the number of movies in a given genre.
  */
 CREATE
-OR REPLACE FUNCTION get_movie_count_by_genre (genre_name text) RETURNS integer AS $$
+    OR REPLACE FUNCTION get_movie_count_by_genre(genre_name text) RETURNS integer AS
+$$
 DECLARE
     movie_count integer;
 BEGIN
     SELECT COUNT(*)
     INTO movie_count
     FROM movie_genres mg
-    JOIN genres g ON mg.genre_id = g.genre_id
-    JOIN movies m ON mg.movie_id = m.movie_id
+             JOIN genres g ON mg.genre_id = g.genre_id
+             JOIN movies m ON mg.movie_id = m.movie_id
     WHERE g.name = genre_name;
 
     RETURN movie_count;
 END;
 $$ LANGUAGE plpgsql;
 
-SELECT
-    get_movie_count_by_genre ('Action');
+SELECT get_movie_count_by_genre('Action');
 
 -- 2.	Create a stored procedure that deletes all movies released before a specified year.
 CREATE
-OR REPLACE PROCEDURE delete_movies_before (in_year INT) LANGUAGE plpgsql AS $$
+    OR REPLACE PROCEDURE delete_movies_before(in_year INT)
+    LANGUAGE plpgsql AS
+$$
 BEGIN
-    DELETE FROM movies
+    DELETE
+    FROM movies
     WHERE year < in_year;
 END;
 $$;
 
-CALL delete_movies_before (2000);
+CALL delete_movies_before(2000);
 
 -- 3. Create a trigger that automatically sets the creation date of a movie when it is added.
 ALTER TABLE movies
-ADD COLUMN creation_date DATE;
+    ADD COLUMN creation_date DATE;
 
 CREATE
-OR REPLACE FUNCTION set_creation_date () RETURNS TRIGGER AS $$
+    OR REPLACE FUNCTION set_creation_date() RETURNS TRIGGER AS
+$$
 BEGIN
     NEW.creation_date := CURRENT_DATE;
-    RETURN NEW; 
+    RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER trigger_set_creation_date BEFORE INSERT ON movies FOR EACH ROW
-EXECUTE FUNCTION set_creation_date ();
+CREATE TRIGGER trigger_set_creation_date
+    BEFORE INSERT
+    ON movies
+    FOR EACH ROW
+EXECUTE FUNCTION set_creation_date();
 
-INSERT INTO
-    movies (name, year, availability)
-VALUES
-    ('Dark Knight', 2008, TRUE);
+INSERT INTO movies (name, year, availability)
+VALUES ('Dark Knight', 2008, TRUE);

@@ -3,22 +3,22 @@
 ## Session Goals
 
 1. **Familiarize with basic authentication mechanisms and user/role management**:
-   - Creating users and roles in PostgreSQL.
-   - Differences between a user and a role.
-   - Authentication methods (md5, scram-sha-256, trust, etc.).
+    - Creating users and roles in PostgreSQL.
+    - Differences between a user and a role.
+    - Authentication methods (md5, scram-sha-256, trust, etc.).
 
 2. **Study GRANT and REVOKE commands**:
-   - How to grant and revoke permissions on objects (tables, schemas, functions, sequences, etc.).
-   - Inheritance of permissions through role groups.
+    - How to grant and revoke permissions on objects (tables, schemas, functions, sequences, etc.).
+    - Inheritance of permissions through role groups.
 
 3. **Understand encryption basics**:
-   - Encryption of communication channels (SSL/TLS).
-   - Data encryption at the file system or application level.
-   - Basic approaches to protecting confidential data.
+    - Encryption of communication channels (SSL/TLS).
+    - Data encryption at the file system or application level.
+    - Basic approaches to protecting confidential data.
 
 4. **Learn how to test query execution and permissions**:
-   - How to test different users' access to tables and other objects.
-   - Logs and event audit checks.
+    - How to test different users' access to tables and other objects.
+    - Logs and event audit checks.
 
 ---
 
@@ -26,7 +26,8 @@
 
 ### 1.1 Roles
 
-In PostgreSQL, both users and groups are called **roles**. The only difference is that a role may have login capability (`LOGIN`) or not.
+In PostgreSQL, both users and groups are called **roles**. The only difference is that a role may have login
+capability (`LOGIN`) or not.
 
 - **CREATE ROLE** — creates a role (can be a "group" or "user").
 - **CREATE USER** — a simplified syntax for a role with the `LOGIN` option.
@@ -49,7 +50,8 @@ CREATE USER bob WITH PASSWORD 'bobpass' CREATEDB;
 
 ### 1.3 Authentication Parameters
 
-The `pg_hba.conf` configuration file specifies connection rules (`host`, `local`), databases, roles, and authentication methods (`md5`, `scram-sha-256`, `trust`, `peer`, etc.).
+The `pg_hba.conf` configuration file specifies connection rules (`host`, `local`), databases, roles, and authentication
+methods (`md5`, `scram-sha-256`, `trust`, `peer`, etc.).
 
 Example `pg_hba.conf` entry:
 
@@ -57,7 +59,8 @@ Example `pg_hba.conf` entry:
 host    all             all             0.0.0.0/0       md5
 ```
 
-This means that for all users (`all`), for all databases (`all`), from any IP address (`0.0.0.0/0`), the password authentication method `md5` is used.
+This means that for all users (`all`), for all databases (`all`), from any IP address (`0.0.0.0/0`), the password
+authentication method `md5` is used.
 
 ## 2. Access Control (GRANT, REVOKE)
 
@@ -72,6 +75,7 @@ GRANT SELECT, INSERT ON TABLE books TO alice;
 - Grants `SELECT` and `INSERT` permissions on the `books` table to user `alice`.
 
 Other variations:
+
 - `GRANT UPDATE, DELETE` — allows modifying/deleting rows.
 - `GRANT ALL PRIVILEGES` — grants all permissions.
 
@@ -124,17 +128,16 @@ hostssl all all 0.0.0.0/0 scram-sha-256
 ```sql
 -- Example using pgcrypto to encrypt a column:
 INSERT INTO users (username, secret_data)
-VALUES (
-  'Bob',
-  pgp_sym_encrypt('Some secret info', 'my_secret_key')
-);
+VALUES ('Bob',
+        pgp_sym_encrypt('Some secret info', 'my_secret_key'));
 ```
 
 ## 4. Query Execution Testing and Logging
 
 ### 4.1 PostgreSQL Logs
 
-- Log files (e.g., `postgresql-<date>.log`) contain information about connections, errors, executed commands (depending on settings).
+- Log files (e.g., `postgresql-<date>.log`) contain information about connections, errors, executed commands (depending
+  on settings).
 - Logging settings example:
 
 ```ini

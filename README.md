@@ -1,6 +1,7 @@
 # SRE SQL Lessons Repository
 
-This repository contains various lessons related to SQL and database management. Below is a list of available lessons along with their links.
+This repository contains various lessons related to SQL and database management. Below is a list of available lessons
+along with their links.
 
 ## Lessons
 
@@ -16,4 +17,5 @@ This repository contains various lessons related to SQL and database management.
 10. [Lesson 10](lesson_10.md) - Advanced Scenarios for SRE.
 
 ## License
+
 This project is open-source and available under the Apache License.
