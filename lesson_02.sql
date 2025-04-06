@@ -107,7 +107,7 @@ VALUES
     (12, 10), -- The Lion King -> Animation
     (13, 1), -- Jurassic Park -> Action
     (14, 1), -- Star Wars: A New Hope -> Action
-    (15, 7);
+    (15, 7); -- Back to the Future -> Science Fiction
 
 -- Back to the Future -> Science Fiction
 SELECT
